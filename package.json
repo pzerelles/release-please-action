@@ -29,7 +29,7 @@
   "homepage": "https://github.com/bcoe/release-please-action#readme",
   "dependencies": {
     "@actions/core": "^1.10.0",
-    "@pz-mxu/release-please": "^16.6.0-gitea.2"
+    "@pz-mxu/release-please": "^16.6.0-gitea.5"
   },
   "devDependencies": {
     "@types/mocha": "^9.0.0",
