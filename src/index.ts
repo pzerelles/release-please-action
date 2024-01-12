@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as core from '@actions/core';
-import {GitHub, Manifest, CreatedRelease, PullRequest, VERSION} from 'release-please';
+import {GitHub, Manifest, CreatedRelease, PullRequest, VERSION} from '@pz-mxu/release-please';
 
 const DEFAULT_CONFIG_FILE = 'release-please-config.json';
 const DEFAULT_MANIFEST_FILE = '.release-please-manifest.json';
@@ -40,9 +40,11 @@ interface ActionInputs {
   skipGitHubPullRequest?: boolean;
   fork?: boolean;
   includeComponentInTag?: boolean;
+  gitea?: boolean;
 }
 
 function parseInputs(): ActionInputs {
+  const githubApiUrl = core.getInput('github-api-url') || DEFAULT_GITHUB_API_URL
   const inputs: ActionInputs = {
     token: core.getInput('token', {required: true}),
     releaseType: getOptionalInput('release-type'),
@@ -51,7 +53,7 @@ function parseInputs(): ActionInputs {
     targetBranch: getOptionalInput('target-branch'),
     configFile: core.getInput('config-file') || DEFAULT_CONFIG_FILE,
     manifestFile: core.getInput('manifest-file') || DEFAULT_MANIFEST_FILE,
-    githubApiUrl: core.getInput('github-api-url') || DEFAULT_GITHUB_API_URL,
+    githubApiUrl,
     githubGraphqlUrl:
       (core.getInput('github-graphql-url') || '').replace(/\/graphql$/, '') ||
       DEFAULT_GITHUB_GRAPHQL_URL,
@@ -60,6 +62,7 @@ function parseInputs(): ActionInputs {
     skipGitHubPullRequest: getOptionalBooleanInput('skip-github-pull-request'),
     fork: getOptionalBooleanInput('fork'),
     includeComponentInTag: getOptionalBooleanInput('include-component-in-tag'),
+    gitea: getOptionalBooleanInput('gitea') || githubApiUrl !== DEFAULT_GITHUB_API_URL
   };
   return inputs;
 }
@@ -147,6 +150,7 @@ function getGitHubInstance(inputs: ActionInputs): Promise<GitHub> {
     graphqlUrl: inputs.githubGraphqlUrl,
     token: inputs.token,
     defaultBranch: inputs.targetBranch,
+    gitea: inputs.gitea
   };
   return GitHub.create(githubCreateOpts);
 }
